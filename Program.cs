@@ -1,4 +1,4 @@
-﻿namespace phonebook_algorithms;
+﻿namespace PhonebookAlgorithms;
 
 class Program
 {
