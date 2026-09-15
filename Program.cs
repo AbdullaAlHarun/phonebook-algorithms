@@ -1,5 +1,4 @@
 ﻿using PhonebookAlgorithms.Enums;
-using PhonebookAlgorithms.Models;
 using PhonebookAlgorithms.Services;
 
 namespace PhonebookAlgorithms;
@@ -10,17 +9,16 @@ class Program
     {
         try
         {
+            Phonebook phonebook = Phonebook.Load("phonebook.csv");
+
             Console.WriteLine("PHONEBOOK - SEARCHING AND SORTING");
             Console.WriteLine("=================================");
             Console.WriteLine();
-
-            Phonebook phonebook = Phonebook.Load("phonebook.csv");
-
             Console.WriteLine(
                 $"Loaded {phonebook.Count} contacts from phonebook.csv");
             Console.WriteLine();
 
-            RunSortingTests();
+            RunSortingMeasurements();
         }
         catch (FileNotFoundException ex)
         {
@@ -36,274 +34,163 @@ class Program
         }
     }
 
-    private static void RunSortingTests()
+    private static void RunSortingMeasurements()
     {
-        Console.WriteLine("--- Sorting Correctness Tests ---");
+        Console.WriteLine("--- Sorting Measurements ---");
+        Console.WriteLine("Field: LastName | Order: Ascending");
         Console.WriteLine();
 
         Console.WriteLine(
-            "{0,-12} {1,-12} {2,-12} {3,-8} {4,12} {5,10}",
+            "{0,-12} {1,-18} {2,14} {3,12}",
             "Algorithm",
-            "Field",
-            "Order",
-            "Result",
+            "Input Shape",
             "Comparisons",
             "Moves");
 
-        Console.WriteLine(new string('-', 72));
+        Console.WriteLine(new string('-', 60));
 
-        TestInsertionSort(Field.FirstName, SortOrder.Ascending);
-        TestInsertionSort(Field.FirstName, SortOrder.Descending);
+        MeasureInsertionAsSupplied();
+        MeasureInsertionSorted();
+        MeasureInsertionReverse();
 
-        TestInsertionSort(Field.LastName, SortOrder.Ascending);
-        TestInsertionSort(Field.LastName, SortOrder.Descending);
-
-        TestInsertionSort(Field.Mobile, SortOrder.Ascending);
-        TestInsertionSort(Field.Mobile, SortOrder.Descending);
-
-        TestMergeSort(Field.FirstName, SortOrder.Ascending);
-        TestMergeSort(Field.FirstName, SortOrder.Descending);
-
-        TestMergeSort(Field.LastName, SortOrder.Ascending);
-        TestMergeSort(Field.LastName, SortOrder.Descending);
-
-        TestMergeSort(Field.Mobile, SortOrder.Ascending);
-        TestMergeSort(Field.Mobile, SortOrder.Descending);
+        MeasureMergeAsSupplied();
+        MeasureMergeSorted();
+        MeasureMergeReverse();
 
         Console.WriteLine();
-
-        RunEdgeCaseTests();
     }
 
-    private static void TestInsertionSort(
-        Field field,
-        SortOrder order)
+    private static void MeasureInsertionAsSupplied()
     {
-        Phonebook phonebook = Phonebook.Load("phonebook.csv");
+        Phonebook phonebook =
+            Phonebook.Load("phonebook.csv");
 
-        phonebook.InsertionSort(field, order);
+        phonebook.InsertionSort(
+            Field.LastName,
+            SortOrder.Ascending);
 
-        bool sorted = IsSorted(phonebook, field, order);
-
-        PrintSortResult(
+        PrintMeasurement(
             "Insertion",
-            field,
-            order,
-            sorted,
+            "As supplied",
             phonebook.ComparisonCount,
             phonebook.MoveCount);
     }
 
-    private static void TestMergeSort(
-        Field field,
-        SortOrder order)
+    private static void MeasureInsertionSorted()
     {
-        Phonebook phonebook = Phonebook.Load("phonebook.csv");
+        Phonebook phonebook =
+            Phonebook.Load("phonebook.csv");
 
-        phonebook.MergeSort(field, order);
+        // Prepare already-sorted input.
+        phonebook.MergeSort(
+            Field.LastName,
+            SortOrder.Ascending);
 
-        bool sorted = IsSorted(phonebook, field, order);
+        // Measure Insertion Sort only.
+        phonebook.InsertionSort(
+            Field.LastName,
+            SortOrder.Ascending);
 
-        PrintSortResult(
-            "Merge",
-            field,
-            order,
-            sorted,
+        PrintMeasurement(
+            "Insertion",
+            "Already sorted",
             phonebook.ComparisonCount,
             phonebook.MoveCount);
     }
 
-    private static void PrintSortResult(
+    private static void MeasureInsertionReverse()
+    {
+        Phonebook phonebook =
+            Phonebook.Load("phonebook.csv");
+
+        // Prepare reverse-sorted input.
+        phonebook.MergeSort(
+            Field.LastName,
+            SortOrder.Descending);
+
+        // Measure Insertion Sort only.
+        phonebook.InsertionSort(
+            Field.LastName,
+            SortOrder.Ascending);
+
+        PrintMeasurement(
+            "Insertion",
+            "Reverse sorted",
+            phonebook.ComparisonCount,
+            phonebook.MoveCount);
+    }
+
+    private static void MeasureMergeAsSupplied()
+    {
+        Phonebook phonebook =
+            Phonebook.Load("phonebook.csv");
+
+        phonebook.MergeSort(
+            Field.LastName,
+            SortOrder.Ascending);
+
+        PrintMeasurement(
+            "Merge",
+            "As supplied",
+            phonebook.ComparisonCount,
+            phonebook.MoveCount);
+    }
+
+    private static void MeasureMergeSorted()
+    {
+        Phonebook phonebook =
+            Phonebook.Load("phonebook.csv");
+
+        // Prepare already-sorted input.
+        phonebook.InsertionSort(
+            Field.LastName,
+            SortOrder.Ascending);
+
+        // Measure Merge Sort only.
+        phonebook.MergeSort(
+            Field.LastName,
+            SortOrder.Ascending);
+
+        PrintMeasurement(
+            "Merge",
+            "Already sorted",
+            phonebook.ComparisonCount,
+            phonebook.MoveCount);
+    }
+
+    private static void MeasureMergeReverse()
+    {
+        Phonebook phonebook =
+            Phonebook.Load("phonebook.csv");
+
+        // Prepare reverse-sorted input.
+        phonebook.InsertionSort(
+            Field.LastName,
+            SortOrder.Descending);
+
+        // Measure Merge Sort only.
+        phonebook.MergeSort(
+            Field.LastName,
+            SortOrder.Ascending);
+
+        PrintMeasurement(
+            "Merge",
+            "Reverse sorted",
+            phonebook.ComparisonCount,
+            phonebook.MoveCount);
+    }
+
+    private static void PrintMeasurement(
         string algorithm,
-        Field field,
-        SortOrder order,
-        bool passed,
+        string inputShape,
         long comparisons,
         long moves)
     {
         Console.WriteLine(
-            "{0,-12} {1,-12} {2,-12} {3,-8} {4,12} {5,10}",
+            "{0,-12} {1,-18} {2,14} {3,12}",
             algorithm,
-            field,
-            order,
-            passed ? "PASS" : "FAIL",
+            inputShape,
             comparisons,
             moves);
-    }
-
-    private static bool IsSorted(
-        Phonebook phonebook,
-        Field field,
-        SortOrder order)
-    {
-        for (int i = 1; i < phonebook.Count; i++)
-        {
-            string previous =
-                GetFieldValue(
-                    phonebook.GetContact(i - 1),
-                    field);
-
-            string current =
-                GetFieldValue(
-                    phonebook.GetContact(i),
-                    field);
-
-            int comparison = string.Compare(
-                previous,
-                current,
-                StringComparison.OrdinalIgnoreCase);
-
-            if (order == SortOrder.Ascending &&
-                comparison > 0)
-            {
-                return false;
-            }
-
-            if (order == SortOrder.Descending &&
-                comparison < 0)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static string GetFieldValue(
-        Contact contact,
-        Field field)
-    {
-        return field switch
-        {
-            Field.FirstName => contact.FirstName,
-            Field.LastName => contact.LastName,
-            Field.Mobile => contact.Mobile,
-
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(field))
-        };
-    }
-
-    private static void RunEdgeCaseTests()
-    {
-        Console.WriteLine("--- Sorting Edge Cases ---");
-        Console.WriteLine();
-
-        Console.WriteLine(
-            "{0,-12} {1,-18} {2,-8}",
-            "Algorithm",
-            "Test",
-            "Result");
-
-        Console.WriteLine(new string('-', 40));
-
-        TestInsertionEmpty();
-        TestInsertionSingle();
-
-        TestMergeEmpty();
-        TestMergeSingle();
-
-        Console.WriteLine();
-    }
-
-    private static void TestInsertionEmpty()
-    {
-        Phonebook phonebook =
-            Phonebook.FromContacts(
-                Array.Empty<Contact>());
-
-        phonebook.InsertionSort(
-            Field.LastName,
-            SortOrder.Ascending);
-
-        bool passed = phonebook.Count == 0;
-
-        PrintEdgeResult(
-            "Insertion",
-            "Empty array",
-            passed);
-    }
-
-    private static void TestInsertionSingle()
-    {
-        Phonebook phonebook =
-            Phonebook.FromContacts(
-                new[] { CreateTestContact() });
-
-        phonebook.InsertionSort(
-            Field.LastName,
-            SortOrder.Ascending);
-
-        bool passed =
-            phonebook.Count == 1 &&
-            phonebook.GetContact(0).LastName == "Person";
-
-        PrintEdgeResult(
-            "Insertion",
-            "Single element",
-            passed);
-    }
-
-    private static void TestMergeEmpty()
-    {
-        Phonebook phonebook =
-            Phonebook.FromContacts(
-                Array.Empty<Contact>());
-
-        phonebook.MergeSort(
-            Field.LastName,
-            SortOrder.Ascending);
-
-        bool passed = phonebook.Count == 0;
-
-        PrintEdgeResult(
-            "Merge",
-            "Empty array",
-            passed);
-    }
-
-    private static void TestMergeSingle()
-    {
-        Phonebook phonebook =
-            Phonebook.FromContacts(
-                new[] { CreateTestContact() });
-
-        phonebook.MergeSort(
-            Field.LastName,
-            SortOrder.Ascending);
-
-        bool passed =
-            phonebook.Count == 1 &&
-            phonebook.GetContact(0).LastName == "Person";
-
-        PrintEdgeResult(
-            "Merge",
-            "Single element",
-            passed);
-    }
-
-    private static Contact CreateTestContact()
-    {
-        return new Contact
-        {
-            FirstName = "Test",
-            LastName = "Person",
-            Mobile = "12345678",
-            Birthday = "2000-01-01",
-            Street = "Test Street 1",
-            City = "Oslo"
-        };
-    }
-
-    private static void PrintEdgeResult(
-        string algorithm,
-        string test,
-        bool passed)
-    {
-        Console.WriteLine(
-            "{0,-12} {1,-18} {2,-8}",
-            algorithm,
-            test,
-            passed ? "PASS" : "FAIL");
     }
 }
