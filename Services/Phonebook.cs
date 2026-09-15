@@ -44,6 +44,15 @@ public class Phonebook
         MoveCount = sorter.MoveCount;
     }
 
+    public void MergeSort(Field field, SortOrder order)
+    {
+        PhonebookAlgorithms.Algorithms.MergeSort sorter =
+            new PhonebookAlgorithms.Algorithms.MergeSort(_comparer);
+
+        sorter.Sort(_contacts, field, order);
+
+        MoveCount = sorter.MoveCount;
+    }
    
     public Contact GetContact(int index)
     {
