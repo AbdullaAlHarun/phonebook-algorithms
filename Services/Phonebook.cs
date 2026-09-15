@@ -25,19 +25,55 @@ public class Phonebook
         get { return _comparer.ComparisonCount; }
     }
 
-    /// <summary>
-    /// Performs a linear search on the selected field.
-    /// Time complexity: O(n). Additional space: O(n).
-    /// </summary>
+    public long MoveCount { get; private set; }
+
+    
     public Contact[] LinearSearch(Field field, string value)
     {
         LinearSearch search = new LinearSearch(_comparer);
         return search.Search(_contacts, field, value);
     }
 
-    /// <summary>
-    /// Loads contacts from the supplied CSV file.
-    /// </summary>
+ 
+    public void InsertionSort(Field field, SortOrder order)
+    {
+        PhonebookAlgorithms.Algorithms.InsertionSort sorter =
+            new PhonebookAlgorithms.Algorithms.InsertionSort(_comparer);
+
+        sorter.Sort(_contacts, field, order);
+        MoveCount = sorter.MoveCount;
+    }
+
+   
+    public Contact GetContact(int index)
+    {
+        if (index < 0 || index >= _contacts.Length)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        return _contacts[index];
+    }
+
+
+    public static Phonebook FromContacts(Contact[] contacts)
+    {
+        if (contacts == null)
+        {
+            throw new ArgumentNullException(nameof(contacts));
+        }
+
+        Contact[] copy = new Contact[contacts.Length];
+
+        for (int i = 0; i < contacts.Length; i++)
+        {
+            copy[i] = contacts[i];
+        }
+
+        return new Phonebook(copy);
+    }
+
+
     public static Phonebook Load(string csvPath)
     {
         if (!File.Exists(csvPath))
