@@ -1,3 +1,4 @@
+using PhonebookAlgorithms.Enums;
 using PhonebookAlgorithms.Models;
 
 namespace PhonebookAlgorithms.Services;
@@ -15,7 +16,67 @@ public class Phonebook
     {
         get { return _contacts.Length; }
     }
-    
+
+    private string GetFieldValue(Contact contact, Field field)
+    {
+        return field switch
+        {
+            Field.FirstName => contact.FirstName,
+            Field.LastName => contact.LastName,
+            Field.Mobile => contact.Mobile,
+            _ => throw new ArgumentOutOfRangeException(nameof(field))
+        };
+    }
+
+    private int CompareContacts(Contact first, Contact second, Field field)
+    {
+        return string.Compare(
+            GetFieldValue(first, field),
+            GetFieldValue(second, field),
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Performs a case-insensitive linear search and returns all matches.
+    /// Time complexity: O(n). Additional space: O(n).
+    /// </summary>
+    public Contact[] LinearSearch(Field field, string value)
+    {
+        if (value == null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        Contact[] matches = new Contact[_contacts.Length];
+        int matchCount = 0;
+
+        for (int i = 0; i < _contacts.Length; i++)
+        {
+            string contactValue = GetFieldValue(_contacts[i], field);
+
+            if (string.Equals(
+                    contactValue,
+                    value,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                matches[matchCount] = _contacts[i];
+                matchCount++;
+            }
+        }
+
+        Contact[] result = new Contact[matchCount];
+
+        for (int i = 0; i < matchCount; i++)
+        {
+            result[i] = matches[i];
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Loads contacts from the supplied CSV file.
+    /// </summary>
     public static Phonebook Load(string csvPath)
     {
         if (!File.Exists(csvPath))
@@ -30,7 +91,7 @@ public class Phonebook
         if (lines.Length < 2)
         {
             throw new FormatException(
-                "The phonebook CSV file does not contain any contacts.");
+                "The CSV file does not contain any contacts.");
         }
 
         Contact[] contacts = new Contact[lines.Length - 1];
@@ -42,10 +103,10 @@ public class Phonebook
             if (values.Length != 6)
             {
                 throw new FormatException(
-                    $"Invalid CSV data on line {i + 1}. Expected 6 columns.");
+                    $"Invalid data on line {i + 1}.");
             }
 
-            Contact contact = new Contact
+            contacts[i - 1] = new Contact
             {
                 FirstName = values[0],
                 LastName = values[1],
@@ -54,8 +115,6 @@ public class Phonebook
                 Street = values[4],
                 City = values[5]
             };
-
-            contacts[i - 1] = contact;
         }
 
         return new Phonebook(contacts);
