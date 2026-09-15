@@ -12,14 +12,15 @@ public static class BinarySearchTests
         Console.WriteLine();
 
         Console.WriteLine(
-            "{0,-5} {1,-12} {2,-18} {3,10} {4,14}",
+            "{0,-5} {1,-12} {2,-18} {3,10} {4,14} {5,8}",
             "Test",
             "Field",
             "Target",
             "Result",
-            "Comparisons");
+            "Comparisons",
+            "Status");
 
-        Console.WriteLine(new string('-', 65));
+        Console.WriteLine(new string('-', 75));
 
         TestExistingMobile();
         TestMobileBelowRange();
@@ -41,8 +42,10 @@ public static class BinarySearchTests
             Field.Mobile,
             SortOrder.Ascending);
 
+        int expected = phonebook.Count / 2;
+
         string target =
-            phonebook.GetContact(phonebook.Count / 2).Mobile;
+            phonebook.GetContact(expected).Mobile;
 
         int result =
             phonebook.BinarySearch(Field.Mobile, target);
@@ -52,6 +55,7 @@ public static class BinarySearchTests
             "Mobile",
             target,
             result,
+            expected,
             phonebook.ComparisonCount);
     }
 
@@ -73,6 +77,7 @@ public static class BinarySearchTests
             "Mobile",
             "00000000",
             result,
+            -1,
             phonebook.ComparisonCount);
     }
 
@@ -94,6 +99,7 @@ public static class BinarySearchTests
             "Mobile",
             "99999999",
             result,
+            -1,
             phonebook.ComparisonCount);
     }
 
@@ -108,17 +114,29 @@ public static class BinarySearchTests
         string target =
             FindDuplicateLastName(phonebook);
 
+        int expected =
+            FindFirstLastNameIndex(phonebook, target);
+
         int result =
             phonebook.BinarySearch(
                 Field.LastName,
                 target);
+
+        bool previousIsDifferent =
+            result == 0 ||
+            !string.Equals(
+                phonebook.GetContact(result - 1).LastName,
+                target,
+                StringComparison.OrdinalIgnoreCase);
 
         PrintResult(
             4,
             "LastName",
             target,
             result,
-            phonebook.ComparisonCount);
+            expected,
+            phonebook.ComparisonCount,
+            previousIsDifferent);
 
         if (result > 0)
         {
@@ -148,6 +166,7 @@ public static class BinarySearchTests
             "LastName",
             target,
             result,
+            -1,
             phonebook.ComparisonCount);
     }
 
@@ -162,17 +181,29 @@ public static class BinarySearchTests
         string target =
             FindDuplicateFirstName(phonebook);
 
+        int expected =
+            FindFirstFirstNameIndex(phonebook, target);
+
         int result =
             phonebook.BinarySearch(
                 Field.FirstName,
                 target);
+
+        bool previousIsDifferent =
+            result == 0 ||
+            !string.Equals(
+                phonebook.GetContact(result - 1).FirstName,
+                target,
+                StringComparison.OrdinalIgnoreCase);
 
         PrintResult(
             6,
             "FirstName",
             target,
             result,
-            phonebook.ComparisonCount);
+            expected,
+            phonebook.ComparisonCount,
+            previousIsDifferent);
 
         if (result > 0)
         {
@@ -198,6 +229,7 @@ public static class BinarySearchTests
             "LastName",
             "Test",
             result,
+            -1,
             phonebook.ComparisonCount);
     }
 
@@ -227,6 +259,7 @@ public static class BinarySearchTests
             "LastName",
             "Person",
             result,
+            0,
             phonebook.ComparisonCount);
     }
 
@@ -302,19 +335,61 @@ public static class BinarySearchTests
             "No suitable duplicate first name was found.");
     }
 
+    private static int FindFirstLastNameIndex(
+        Phonebook phonebook,
+        string target)
+    {
+        for (int i = 0; i < phonebook.Count; i++)
+        {
+            if (string.Equals(
+                    phonebook.GetContact(i).LastName,
+                    target,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static int FindFirstFirstNameIndex(
+        Phonebook phonebook,
+        string target)
+    {
+        for (int i = 0; i < phonebook.Count; i++)
+        {
+            if (string.Equals(
+                    phonebook.GetContact(i).FirstName,
+                    target,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     private static void PrintResult(
         int test,
         string field,
         string target,
         int result,
-        long comparisons)
+        int expected,
+        long comparisons,
+        bool extraCheck = true)
     {
+        bool passed =
+            result == expected && extraCheck;
+
         Console.WriteLine(
-            "{0,-5} {1,-12} {2,-18} {3,10} {4,14}",
+            "{0,-5} {1,-12} {2,-18} {3,10} {4,14} {5,8}",
             test,
             field,
             target,
             result,
-            comparisons);
+            comparisons,
+            passed ? "PASS" : "FAIL");
     }
 }

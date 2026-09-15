@@ -1,13 +1,9 @@
 # Searching and Sorting: Report
 
-Replace every bracketed prompt with your own work. Delete this line and any
-prompt you have answered. **The finished report must be no more than two pages
-of data and your own reflection.** Padding counts against you.
-
 | | |
 |---|---|
-| Name | |
-| Date | |
+| Name | Abdulla Al Harun |
+| Date | 15 September 2026 |
 | Data | phonebook.csv, 200 contacts |
 
 ---
@@ -15,56 +11,96 @@ of data and your own reflection.** Padding counts against you.
 ## 1. Searching unsorted data
 
 | Field | Target | Case | Matches | Comparisons |
-|---|---|---|---|---|
-| LastName | | first record (best case) | | |
-| LastName | | last record (worst case) | | |
-| LastName | | absent value | | |
-| Mobile | | absent value | | |
+|---|---|---|---:|---:|
+| LastName | Bjerke | first record (best case) | 9 | 200 |
+| LastName | Hansen | last record (worst case) | 7 | 200 |
+| LastName | Aardal | absent value | 0 | 200 |
+| Mobile | 00000000 | absent value | 0 | 200 |
 
-**Reflection.** [How many comparisons does a linear search need when the value is
-absent, and why is that number the same for every absent value? Compare your
-best case and worst case figures against the theoretical O(1) and O(n). Does a
-search that finds nine matches cost more than one that finds none?]
+**Reflection.**  
+My linear search used 200 comparisons in all four tests. This is because my
+method searches through the whole array so that it can return all matches, not
+only the first one. This is important for names because the same name can appear
+several times. For example, Bjerke had 9 matches but still needed 200
+comparisons. Aardal had no matches and also needed 200 comparisons. In theory,
+linear search can have a best case of O(1) if it stops after finding the first
+match, and the worst case is O(n). In my implementation I need all matches, so
+the complete array is checked.
 
 ## 2. Sorting
 
 | Algorithm | Input shape | Comparisons | Swaps or moves |
-|---|---|---|---|
-| [Level 1 choice] | as supplied | | |
-| [Level 1 choice] | already sorted | | |
-| [Level 1 choice] | reverse sorted | | |
-| [Level 2 choice] | as supplied | | |
-| [Level 2 choice] | already sorted | | |
-| [Level 2 choice] | reverse sorted | | |
+|---|---|---:|---:|
+| Insertion Sort | as supplied | 9691 | 9494 |
+| Insertion Sort | already sorted | 199 | 0 |
+| Insertion Sort | reverse sorted | 19571 | 19411 |
+| Merge Sort | as supplied | 1282 | 1544 |
+| Merge Sort | already sorted | 812 | 1544 |
+| Merge Sort | reverse sorted | 890 | 1544 |
 
-**Reflection.** [Which algorithm did less work, and on which input shape? Which
-one was hurt most by already sorted data, and which was helped by it? Quote your
-own figures. State the best, average and worst case complexity of each algorithm
-you implemented and say whether your counts agree with it.]
+**Reflection.**  
+The biggest difference was with Insertion Sort. It only needed 199 comparisons
+and 0 moves when the data was already sorted, but reverse sorted data needed
+19571 comparisons and 19411 moves. Merge Sort was more consistent. It used 1282
+comparisons on the original data, 812 when already sorted and 890 when reverse
+sorted. Insertion Sort has O(n) best case and O(n²) average and worst case.
+Merge Sort has O(n log n) in the best, average and worst cases. My results show
+this difference quite clearly. For moves, I counted shifts in Insertion Sort.
+For Merge Sort, I counted contacts copied from the temporary array back to the
+main array.
 
 ## 3. Searching sorted data
 
 | Field | Target | Result | Comparisons |
-|---|---|---|---|
-| LastName | [a surname that appears several times] | index | |
-| LastName | [absent value] | -1 | |
-| Mobile | [a number from the file] | index | |
-| FirstName | [a name that appears several times] | index | |
+|---|---|---:|---:|
+| LastName | Amundsen | 2 | 8 |
+| LastName | Aardal | -1 | 7 |
+| Mobile | 49502717 | 100 | 7 |
+| FirstName | Andreas | 4 | 8 |
 
-Linear search on the same targets, for comparison:
+Linear search on the same type of targets, for comparison:
 
 | Target | Comparisons (linear) | Comparisons (binary) |
-|---|---|---|
-| | | |
+|---|---:|---:|
+| Bjerke | 200 | 8 |
+| Jacobsen | 200 | 8 |
+| Hansen | 200 | 8 |
+| Aardal | 200 | 7 |
 
-**Reflection.** [How many comparisons did binary search need against 200
-contacts, and how does that compare with log2(200)? How do you guarantee the
-first occurrence when a surname is duplicated? Sorting cost you the comparisons
-in part 2: how many searches must you perform before sorting first pays for
-itself?]
+**Reflection.**  
+Binary search needed only 7 or 8 comparisons with 200 contacts. This makes
+sense because log2(200) is about 7.64. When binary search finds a duplicate, I
+do not stop immediately. I save the index and continue searching to the left.
+This gives the first occurrence. For example, Amundsen was returned at index 2
+and the previous surname was Aas.
+
+For the break-even point, I used Merge Sort on the supplied data. Sorting needed
+1282 comparisons. A linear search needs 200 comparisons, while binary search
+needs about 8. For q searches:
+
+1282 + 8q < 200q
+
+1282 < 192q
+
+q > 6.68
+
+This means that after about 7 searches, sorting once and then using binary search
+becomes cheaper than doing repeated linear searches.
 
 ## 4. Insight
 
-**One paragraph.** [What is the single most useful thing these figures taught you
-about choosing an algorithm? Write about something your own numbers show, not
-something you read.]
+The most useful thing I learned from my results is that the input data matters a
+lot when choosing an algorithm. Insertion Sort was very good when the data was
+already sorted, with only 199 comparisons and no moves, but it became much more
+expensive with reverse sorted data. Merge Sort was much more stable for the
+different input shapes. I also saw that binary search is much faster than my
+linear search, but the data has to be sorted first. So the faster search is most
+useful when I am going to search the same data several times.
+
+## AI use
+
+I used AI for support with some difficult parts of the assignment.
+
+1. How can Binary Search return the first/lowest index when there are duplicate values?
+2. How should comparisons and moves be counted consistently for Insertion Sort and Merge Sort?
+3. How can I calculate when sorting once and using Binary Search becomes cheaper than repeated Linear Search?
