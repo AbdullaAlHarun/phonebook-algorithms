@@ -54,6 +54,14 @@ public class Phonebook
         MoveCount = sorter.MoveCount;
     }
    
+    public int BinarySearch(Field field, string value)
+    {
+        PhonebookAlgorithms.Algorithms.BinarySearch search =
+            new PhonebookAlgorithms.Algorithms.BinarySearch(_comparer);
+
+        return search.Search(_contacts, field, value);
+    }
+    
     public Contact GetContact(int index)
     {
         if (index < 0 || index >= _contacts.Length)
