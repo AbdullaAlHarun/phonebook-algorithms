@@ -6,6 +6,7 @@ namespace PhonebookAlgorithms.Services;
 public class Phonebook
 {
     private readonly Contact[] _contacts;
+    private long _comparisonCount;
 
     private Phonebook(Contact[] contacts)
     {
@@ -15,6 +16,11 @@ public class Phonebook
     public int Count
     {
         get { return _contacts.Length; }
+    }
+
+    public long ComparisonCount
+    {
+        get { return _comparisonCount; }
     }
 
     private string GetFieldValue(Contact contact, Field field)
@@ -28,12 +34,21 @@ public class Phonebook
         };
     }
 
+    private int CompareValues(string firstValue, string secondValue)
+    {
+        _comparisonCount++;
+
+        return string.Compare(
+            firstValue,
+            secondValue,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
     private int CompareContacts(Contact first, Contact second, Field field)
     {
-        return string.Compare(
+        return CompareValues(
             GetFieldValue(first, field),
-            GetFieldValue(second, field),
-            StringComparison.OrdinalIgnoreCase);
+            GetFieldValue(second, field));
     }
 
     /// <summary>
@@ -47,6 +62,8 @@ public class Phonebook
             throw new ArgumentNullException(nameof(value));
         }
 
+        _comparisonCount = 0;
+
         Contact[] matches = new Contact[_contacts.Length];
         int matchCount = 0;
 
@@ -54,10 +71,7 @@ public class Phonebook
         {
             string contactValue = GetFieldValue(_contacts[i], field);
 
-            if (string.Equals(
-                    contactValue,
-                    value,
-                    StringComparison.OrdinalIgnoreCase))
+            if (CompareValues(contactValue, value) == 0)
             {
                 matches[matchCount] = _contacts[i];
                 matchCount++;

@@ -66,6 +66,7 @@ class Program
         Console.WriteLine($"Field: {field}");
         Console.WriteLine($"Search value: {value}");
         Console.WriteLine($"Matches: {results.Length}");
+        Console.WriteLine($"Comparisons: {phonebook.ComparisonCount}");
 
         foreach (Contact contact in results)
         {
