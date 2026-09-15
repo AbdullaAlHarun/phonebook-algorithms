@@ -14,11 +14,21 @@ public class LinearSearch
     }
 
     /// <summary>
-    /// Performs a case-insensitive linear search and returns all matches.
-    /// Time complexity: O(n). Additional space: O(n).
+    /// Performs a case-insensitive linear search on the selected field
+    /// and returns all matching contacts.
+    /// Time complexity: O(n).
+    /// Additional space: O(n) for storing the matches.
     /// </summary>
-    public Contact[] Search(Contact[] contacts, Field field, string value)
+    public Contact[] Search(
+        Contact[] contacts,
+        Field field,
+        string value)
     {
+        if (contacts == null)
+        {
+            throw new ArgumentNullException(nameof(contacts));
+        }
+
         if (value == null)
         {
             throw new ArgumentNullException(nameof(value));
@@ -26,22 +36,29 @@ public class LinearSearch
 
         _comparer.ResetCount();
 
-        Contact[] matches = new Contact[contacts.Length];
+        Contact[] matches =
+            new Contact[contacts.Length];
+
         int matchCount = 0;
 
         for (int i = 0; i < contacts.Length; i++)
         {
             string contactValue =
-                _comparer.GetFieldValue(contacts[i], field);
+                _comparer.GetFieldValue(
+                    contacts[i],
+                    field);
 
-            if (_comparer.CompareValues(contactValue, value) == 0)
+            if (_comparer.CompareValues(
+                    contactValue,
+                    value) == 0)
             {
                 matches[matchCount] = contacts[i];
                 matchCount++;
             }
         }
 
-        Contact[] result = new Contact[matchCount];
+        Contact[] result =
+            new Contact[matchCount];
 
         for (int i = 0; i < matchCount; i++)
         {

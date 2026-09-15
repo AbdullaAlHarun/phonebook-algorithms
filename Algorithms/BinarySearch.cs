@@ -13,7 +13,13 @@ public class BinarySearch
         _comparer = comparer;
     }
 
- 
+    /// <summary>
+    /// Searches a contact array that is sorted in ascending order
+    /// by the selected field.
+    /// Returns the lowest matching index, or -1 if no match is found.
+    /// Time complexity: O(log n).
+    /// Additional space: O(1).
+    /// </summary>
     public int Search(
         Contact[] contacts,
         Field field,
@@ -37,7 +43,8 @@ public class BinarySearch
 
         while (left <= right)
         {
-            int middle = left + (right - left) / 2;
+            int middle =
+                left + (right - left) / 2;
 
             string middleValue =
                 _comparer.GetFieldValue(
@@ -53,8 +60,8 @@ public class BinarySearch
             {
                 result = middle;
 
-                // Continue searching to the left
-                // for the first duplicate.
+                // Continue to the left to find
+                // the first occurrence of a duplicate.
                 right = middle - 1;
             }
             else if (comparison < 0)

@@ -1,13 +1,16 @@
 namespace PhonebookAlgorithms.Models;
 
+/// <summary>
+/// Represents one contact in the phonebook.
+/// </summary>
 public class Contact
 {
-    private string _firstName;
-    private string _lastName;
-    private string _mobile;
-    private string _birthday;
-    private string _street;
-    private string _city;
+    private string _firstName = string.Empty;
+    private string _lastName = string.Empty;
+    private string _mobile = string.Empty;
+    private string _birthday = string.Empty;
+    private string _street = string.Empty;
+    private string _city = string.Empty;
 
     public string FirstName
     {

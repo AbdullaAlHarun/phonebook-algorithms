@@ -16,9 +16,11 @@ public class MergeSort
     }
 
     /// <summary>
-    /// Sorts the contact array in place using Merge Sort.
+    /// Sorts the contact array using Merge Sort.
     /// Time complexity: O(n log n).
-    /// Additional space: O(n).
+    /// Additional space: O(n) for the temporary array.
+    /// A move is counted when a contact is copied
+    /// from the temporary array back to the main array.
     /// </summary>
     public void Sort(
         Contact[] contacts,
@@ -38,7 +40,8 @@ public class MergeSort
             return;
         }
 
-        Contact[] temp = new Contact[contacts.Length];
+        Contact[] temp =
+            new Contact[contacts.Length];
 
         SortRecursive(
             contacts,
@@ -62,7 +65,8 @@ public class MergeSort
             return;
         }
 
-        int middle = left + (right - left) / 2;
+        int middle =
+            left + (right - left) / 2;
 
         SortRecursive(
             contacts,
@@ -144,7 +148,9 @@ public class MergeSort
             k++;
         }
 
-        for (int index = left; index <= right; index++)
+        for (int index = left;
+             index <= right;
+             index++)
         {
             contacts[index] = temp[index];
             MoveCount++;
