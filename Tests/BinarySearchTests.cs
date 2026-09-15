@@ -4,9 +4,9 @@ using PhonebookAlgorithms.Services;
 
 namespace PhonebookAlgorithms.Tests;
 
-public static class BinarySearchTests
+internal static class BinarySearchTests
 {
-    public static void Run()
+    internal static void Run()
     {
         Console.WriteLine("--- 3. Binary Search Tests ---");
         Console.WriteLine();
